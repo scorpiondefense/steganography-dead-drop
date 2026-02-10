@@ -28,50 +28,68 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-16 px-4">
-      <h1 className="text-3xl font-bold mb-8 text-center">Sign In</h1>
-      {error && (
-        <div className="bg-red-50 text-red-700 p-3 rounded mb-4">{error}</div>
-      )}
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Email
-          </label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none"
-          />
+    <div className="min-h-[70vh] flex items-center justify-center px-6">
+      <div className="w-full max-w-sm">
+        <div className="text-center mb-8">
+          <h1 className="font-display text-3xl font-bold text-surface-900">
+            Welcome back
+          </h1>
+          <p className="text-gray-500 mt-1 text-sm">
+            Sign in to your account
+          </p>
         </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Password
-          </label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none"
-          />
-        </div>
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-gray-900 text-white py-2.5 rounded-lg font-semibold hover:bg-gray-800 disabled:opacity-50 transition-colors"
-        >
-          {loading ? "Signing in..." : "Sign In"}
-        </button>
-      </form>
-      <p className="mt-4 text-center text-gray-500">
-        Don&apos;t have an account?{" "}
-        <Link href="/register" className="text-gray-900 font-semibold hover:underline">
-          Register
-        </Link>
-      </p>
+
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm mb-6">
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-surface-700 mb-1.5">
+              Email
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="w-full bg-white border border-surface-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-400 transition-all"
+              placeholder="you@example.com"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-surface-700 mb-1.5">
+              Password
+            </label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="w-full bg-white border border-surface-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-400 transition-all"
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-surface-900 text-white py-2.5 rounded-xl font-semibold hover:bg-surface-800 disabled:opacity-50 transition-all active:scale-[0.98]"
+          >
+            {loading ? "Signing in..." : "Sign In"}
+          </button>
+        </form>
+
+        <p className="mt-6 text-center text-sm text-gray-500">
+          Don&apos;t have an account?{" "}
+          <Link
+            href="/register"
+            className="text-brand-600 font-semibold hover:text-brand-700"
+          >
+            Create one
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }

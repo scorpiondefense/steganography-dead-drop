@@ -12,37 +12,39 @@ export default function PaintingCard({ painting }: { painting: Painting }) {
   return (
     <Link
       href={`/paintings/${painting.id}`}
-      className="group block bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow"
+      className="group block bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
     >
-      <div className="aspect-square bg-gray-200 overflow-hidden">
+      <div className="aspect-[4/5] bg-surface-100 overflow-hidden relative">
         <img
           src={imgSrc}
           alt={painting.title}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500 ease-out"
         />
+        {painting.status === "sold" && (
+          <div className="absolute inset-0 bg-surface-950/40 flex items-center justify-center">
+            <span className="bg-white/90 text-surface-900 text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full">
+              Sold
+            </span>
+          </div>
+        )}
+        {painting.medium && (
+          <span className="absolute top-3 left-3 bg-white/85 backdrop-blur-sm text-surface-800 text-[10px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full">
+            {painting.medium}
+          </span>
+        )}
       </div>
       <div className="p-4">
-        <h3 className="font-semibold text-gray-900 truncate">
+        <h3 className="font-display text-base font-semibold text-surface-900 truncate leading-tight">
           {painting.title}
         </h3>
         {painting.artist && (
-          <p className="text-sm text-gray-500 mt-1">{painting.artist}</p>
+          <p className="text-xs text-gray-500 mt-1 font-medium">
+            {painting.artist}
+          </p>
         )}
-        <div className="flex items-center justify-between mt-2">
-          <span className="text-lg font-bold text-gray-900">
-            ${(painting.price_cents / 100).toFixed(2)}
-          </span>
-          {painting.medium && (
-            <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
-              {painting.medium}
-            </span>
-          )}
-        </div>
-        {painting.status === "sold" && (
-          <span className="inline-block mt-2 text-xs bg-red-100 text-red-700 px-2 py-1 rounded">
-            Sold
-          </span>
-        )}
+        <p className="text-lg font-bold text-surface-900 mt-2 tabular-nums">
+          ${(painting.price_cents / 100).toLocaleString("en-US", { minimumFractionDigits: 2 })}
+        </p>
       </div>
     </Link>
   );

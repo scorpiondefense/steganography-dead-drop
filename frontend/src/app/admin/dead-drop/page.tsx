@@ -2,20 +2,23 @@
 
 import { useEffect, useState } from "react";
 import { api, imageUrl } from "@/lib/api";
-import { Painting, StegMessage, DecodeResponse, EncodeResponse } from "@/lib/types";
+import {
+  Painting,
+  StegMessage,
+  DecodeResponse,
+  EncodeResponse,
+} from "@/lib/types";
 
 export default function DeadDropPage() {
   const [paintings, setPaintings] = useState<Painting[]>([]);
   const [messages, setMessages] = useState<StegMessage[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Decode state
   const [decodePaintingId, setDecodePaintingId] = useState("");
   const [decodedMessage, setDecodedMessage] = useState<string | null>(null);
   const [decoding, setDecoding] = useState(false);
   const [decodeError, setDecodeError] = useState("");
 
-  // Encode state
   const [encodePaintingId, setEncodePaintingId] = useState("");
   const [encodeMessage, setEncodeMessage] = useState("");
   const [encoding, setEncoding] = useState(false);
@@ -46,7 +49,6 @@ export default function DeadDropPage() {
       );
       setDecodedMessage(res.message);
       setMessages((prev) => [res.steg_message, ...prev]);
-      // Update painting in list
       setPaintings((prev) =>
         prev.map((p) =>
           p.id === decodePaintingId
@@ -55,9 +57,7 @@ export default function DeadDropPage() {
         )
       );
     } catch (err) {
-      setDecodeError(
-        err instanceof Error ? err.message : "Decode failed"
-      );
+      setDecodeError(err instanceof Error ? err.message : "Decode failed");
     } finally {
       setDecoding(false);
     }
@@ -78,21 +78,17 @@ export default function DeadDropPage() {
       setMessages((prev) => [res.steg_message, ...prev]);
       setPaintings((prev) =>
         prev.map((p) =>
-          p.id === encodePaintingId
-            ? { ...p, has_steg_message: true }
-            : p
+          p.id === encodePaintingId ? { ...p, has_steg_message: true } : p
         )
       );
     } catch (err) {
-      setEncodeError(
-        err instanceof Error ? err.message : "Encode failed"
-      );
+      setEncodeError(err instanceof Error ? err.message : "Encode failed");
     } finally {
       setEncoding(false);
     }
   };
 
-  if (loading) return <div className="text-gray-500">Loading...</div>;
+  if (loading) return <div className="text-gray-400">Loading...</div>;
 
   const selectedDecodePainting = paintings.find(
     (p) => p.id === decodePaintingId
@@ -103,14 +99,46 @@ export default function DeadDropPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Dead Drop</h1>
+      {/* Header */}
+      <div className="flex items-center gap-3 mb-8">
+        <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center">
+          <svg
+            className="w-5 h-5 text-red-500"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+            />
+          </svg>
+        </div>
+        <div>
+          <h1 className="font-display text-2xl font-bold text-surface-900">
+            Dead Drop
+          </h1>
+          <p className="text-xs text-gray-400">
+            Steganographic communication channel &mdash; {messages.length}{" "}
+            signal{messages.length !== 1 && "s"} intercepted
+          </p>
+        </div>
+      </div>
 
+      {/* Panels */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        {/* Decode Panel */}
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <h2 className="text-lg font-semibold mb-4">Decode Hidden Message</h2>
-          <p className="text-sm text-gray-500 mb-4">
-            Select a painting to extract any hidden steganographic message.
+        {/* Decode */}
+        <div className="bg-surface-950 rounded-2xl p-6 text-white">
+          <div className="flex items-center gap-2 mb-4">
+            <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
+            <h2 className="text-sm font-bold uppercase tracking-wider text-blue-400">
+              Intercept
+            </h2>
+          </div>
+          <p className="text-xs text-gray-500 mb-4">
+            Extract hidden payload from uploaded painting
           </p>
 
           <select
@@ -120,25 +148,30 @@ export default function DeadDropPage() {
               setDecodedMessage(null);
               setDecodeError("");
             }}
-            className="w-full border border-gray-300 rounded-lg px-4 py-2 mb-4 outline-none focus:ring-2 focus:ring-gray-900"
+            className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-gray-300 outline-none focus:border-blue-400/50 transition-colors mb-4"
           >
-            <option value="">Select a painting...</option>
+            <option value="">Select target painting...</option>
             {paintings.map((p) => (
               <option key={p.id} value={p.id}>
-                {p.title} {p.has_steg_message && p.steg_decoded ? "(decoded)" : p.has_steg_message ? "(has message)" : ""}
+                {p.title}
+                {p.has_steg_message && p.steg_decoded
+                  ? " [DECODED]"
+                  : p.has_steg_message
+                  ? " [SIGNAL]"
+                  : ""}
               </option>
             ))}
           </select>
 
           {selectedDecodePainting && (
-            <div className="mb-4">
+            <div className="mb-4 rounded-lg overflow-hidden border border-white/5">
               <img
                 src={imageUrl(
                   selectedDecodePainting.thumbnail_path ||
                     selectedDecodePainting.image_path
                 )}
                 alt={selectedDecodePainting.title}
-                className="w-full max-h-48 object-contain rounded"
+                className="w-full max-h-40 object-contain bg-black/20"
               />
             </div>
           )}
@@ -146,36 +179,39 @@ export default function DeadDropPage() {
           <button
             onClick={handleDecode}
             disabled={!decodePaintingId || decoding}
-            className="w-full bg-gray-900 text-white py-2 rounded-lg font-medium hover:bg-gray-800 disabled:opacity-50 transition-colors"
+            className="w-full bg-blue-500 text-white py-2.5 rounded-lg text-sm font-bold uppercase tracking-wider hover:bg-blue-600 disabled:opacity-30 transition-all"
           >
-            {decoding ? "Decoding..." : "Decode"}
+            {decoding ? "Decoding..." : "Extract Signal"}
           </button>
 
           {decodeError && (
-            <div className="mt-4 bg-red-50 text-red-700 p-3 rounded text-sm">
-              {decodeError}
+            <div className="mt-4 bg-red-500/10 border border-red-500/20 text-red-400 p-3 rounded-lg text-xs font-mono">
+              ERR: {decodeError}
             </div>
           )}
 
           {decodedMessage !== null && (
-            <div className="mt-4 bg-green-50 border border-green-200 p-4 rounded">
-              <p className="text-sm font-medium text-green-800 mb-1">
-                Decoded Message:
+            <div className="mt-4 bg-green-500/10 border border-green-500/20 p-4 rounded-lg">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-green-400 mb-2">
+                Decoded Payload
               </p>
-              <p className="text-green-900 font-mono text-sm whitespace-pre-wrap">
+              <p className="text-green-300 font-mono text-sm leading-relaxed whitespace-pre-wrap break-words">
                 {decodedMessage}
               </p>
             </div>
           )}
         </div>
 
-        {/* Encode Panel */}
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <h2 className="text-lg font-semibold mb-4">
-            Encode Reply Message
-          </h2>
-          <p className="text-sm text-gray-500 mb-4">
-            Select a painting and embed a hidden message into its image.
+        {/* Encode */}
+        <div className="bg-surface-950 rounded-2xl p-6 text-white">
+          <div className="flex items-center gap-2 mb-4">
+            <span className="w-2 h-2 rounded-full bg-purple-400 animate-pulse" />
+            <h2 className="text-sm font-bold uppercase tracking-wider text-purple-400">
+              Embed
+            </h2>
+          </div>
+          <p className="text-xs text-gray-500 mb-4">
+            Hide reply message inside a listed painting
           </p>
 
           <select
@@ -185,9 +221,9 @@ export default function DeadDropPage() {
               setEncodeSuccess(false);
               setEncodeError("");
             }}
-            className="w-full border border-gray-300 rounded-lg px-4 py-2 mb-4 outline-none focus:ring-2 focus:ring-gray-900"
+            className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-gray-300 outline-none focus:border-purple-400/50 transition-colors mb-4"
           >
-            <option value="">Select a painting...</option>
+            <option value="">Select carrier painting...</option>
             {paintings.map((p) => (
               <option key={p.id} value={p.id}>
                 {p.title}
@@ -196,14 +232,14 @@ export default function DeadDropPage() {
           </select>
 
           {selectedEncodePainting && (
-            <div className="mb-4">
+            <div className="mb-4 rounded-lg overflow-hidden border border-white/5">
               <img
                 src={imageUrl(
                   selectedEncodePainting.thumbnail_path ||
                     selectedEncodePainting.image_path
                 )}
                 alt={selectedEncodePainting.title}
-                className="w-full max-h-48 object-contain rounded"
+                className="w-full max-h-40 object-contain bg-black/20"
               />
             </div>
           )}
@@ -211,75 +247,95 @@ export default function DeadDropPage() {
           <textarea
             value={encodeMessage}
             onChange={(e) => setEncodeMessage(e.target.value)}
-            placeholder="Enter your secret message..."
-            rows={4}
-            className="w-full border border-gray-300 rounded-lg px-4 py-2 mb-4 outline-none focus:ring-2 focus:ring-gray-900"
+            placeholder="Enter covert message..."
+            rows={3}
+            className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-gray-300 font-mono outline-none focus:border-purple-400/50 placeholder:text-gray-600 transition-colors mb-4"
           />
 
           <button
             onClick={handleEncode}
             disabled={!encodePaintingId || !encodeMessage || encoding}
-            className="w-full bg-gray-900 text-white py-2 rounded-lg font-medium hover:bg-gray-800 disabled:opacity-50 transition-colors"
+            className="w-full bg-purple-500 text-white py-2.5 rounded-lg text-sm font-bold uppercase tracking-wider hover:bg-purple-600 disabled:opacity-30 transition-all"
           >
-            {encoding ? "Encoding..." : "Encode Message"}
+            {encoding ? "Embedding..." : "Embed Signal"}
           </button>
 
           {encodeError && (
-            <div className="mt-4 bg-red-50 text-red-700 p-3 rounded text-sm">
-              {encodeError}
+            <div className="mt-4 bg-red-500/10 border border-red-500/20 text-red-400 p-3 rounded-lg text-xs font-mono">
+              ERR: {encodeError}
             </div>
           )}
 
           {encodeSuccess && (
-            <div className="mt-4 bg-green-50 text-green-700 p-3 rounded text-sm">
-              Message encoded successfully into painting image.
+            <div className="mt-4 bg-green-500/10 border border-green-500/20 text-green-400 p-3 rounded-lg text-xs font-mono">
+              Signal embedded into carrier image. Listing updated.
             </div>
           )}
         </div>
       </div>
 
-      {/* Message History */}
-      <div className="bg-white rounded-lg shadow-sm p-6">
-        <h2 className="text-lg font-semibold mb-4">Message History</h2>
+      {/* Message Log */}
+      <div className="bg-white rounded-2xl border border-surface-200 overflow-hidden">
+        <div className="px-6 py-4 border-b border-surface-200">
+          <h2 className="text-sm font-bold uppercase tracking-wider text-gray-400">
+            Signal Log
+          </h2>
+        </div>
         {messages.length === 0 ? (
-          <p className="text-gray-500 text-sm">No messages yet.</p>
+          <div className="px-6 py-12 text-center text-gray-400 text-sm">
+            No signals recorded.
+          </div>
         ) : (
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="text-left px-4 py-3 font-medium">Direction</th>
-                <th className="text-left px-4 py-3 font-medium">Painting</th>
-                <th className="text-left px-4 py-3 font-medium">Message</th>
-                <th className="text-left px-4 py-3 font-medium">Date</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y">
-              {messages.map((m) => (
-                <tr key={m.id}>
-                  <td className="px-4 py-3">
-                    <span
-                      className={`text-xs px-2 py-1 rounded ${
-                        m.direction === "incoming"
-                          ? "bg-blue-100 text-blue-700"
-                          : "bg-purple-100 text-purple-700"
-                      }`}
-                    >
-                      {m.direction}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 font-mono text-xs">
-                    {m.painting_id.slice(0, 8)}
-                  </td>
-                  <td className="px-4 py-3 max-w-xs truncate">
-                    {m.message_text}
-                  </td>
-                  <td className="px-4 py-3 text-gray-500">
-                    {new Date(m.created_at).toLocaleDateString()}
-                  </td>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="text-left text-[11px] font-semibold uppercase tracking-wider text-gray-400">
+                  <th className="px-6 py-3">Direction</th>
+                  <th className="px-6 py-3">Target</th>
+                  <th className="px-6 py-3">Content</th>
+                  <th className="px-6 py-3">Timestamp</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-surface-100">
+                {messages.map((m) => (
+                  <tr key={m.id} className="hover:bg-surface-50 transition-colors">
+                    <td className="px-6 py-3">
+                      <span
+                        className={`inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full ${
+                          m.direction === "incoming"
+                            ? "bg-blue-50 text-blue-600"
+                            : "bg-purple-50 text-purple-600"
+                        }`}
+                      >
+                        <span
+                          className={`w-1.5 h-1.5 rounded-full ${
+                            m.direction === "incoming"
+                              ? "bg-blue-500"
+                              : "bg-purple-500"
+                          }`}
+                        />
+                        {m.direction === "incoming" ? "RX" : "TX"}
+                      </span>
+                    </td>
+                    <td className="px-6 py-3 font-mono text-xs text-gray-500">
+                      {m.painting_id.slice(0, 8)}
+                    </td>
+                    <td className="px-6 py-3 max-w-xs truncate text-surface-700">
+                      {m.message_text}
+                    </td>
+                    <td className="px-6 py-3 text-xs text-gray-400 tabular-nums">
+                      {new Date(m.created_at).toLocaleString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </div>

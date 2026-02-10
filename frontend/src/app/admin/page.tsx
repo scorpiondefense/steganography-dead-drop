@@ -17,36 +17,48 @@ export default function AdminDashboard() {
   }, []);
 
   if (loading) {
-    return <div className="text-gray-500">Loading...</div>;
+    return (
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        {[...Array(6)].map((_, i) => (
+          <div key={i} className="bg-white rounded-xl border border-surface-200 p-6 animate-pulse">
+            <div className="h-3 bg-surface-200 rounded w-1/2 mb-3" />
+            <div className="h-8 bg-surface-200 rounded w-1/3" />
+          </div>
+        ))}
+      </div>
+    );
   }
 
   if (!stats) {
-    return <div className="text-gray-500">Failed to load stats.</div>;
+    return <div className="text-gray-400">Failed to load stats.</div>;
   }
 
   const cards = [
-    { label: "Users", value: stats.total_users },
-    { label: "Paintings", value: stats.total_paintings },
-    { label: "Orders", value: stats.total_orders },
-    { label: "Comments", value: stats.total_comments },
-    {
-      label: "Revenue",
-      value: `$${(stats.total_revenue_cents / 100).toFixed(2)}`,
-    },
-    { label: "Steg Paintings", value: stats.steg_paintings },
+    { label: "Users", value: stats.total_users, color: "text-surface-900" },
+    { label: "Paintings", value: stats.total_paintings, color: "text-surface-900" },
+    { label: "Orders", value: stats.total_orders, color: "text-surface-900" },
+    { label: "Comments", value: stats.total_comments, color: "text-surface-900" },
+    { label: "Revenue", value: `$${(stats.total_revenue_cents / 100).toLocaleString("en-US", { minimumFractionDigits: 2 })}`, color: "text-green-600" },
+    { label: "Steg Signals", value: stats.steg_paintings, color: "text-red-500" },
   ];
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Admin Dashboard</h1>
+      <h1 className="font-display text-2xl font-bold text-surface-900 mb-6">
+        Dashboard
+      </h1>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         {cards.map((card) => (
           <div
             key={card.label}
-            className="bg-white rounded-lg shadow-sm p-6 text-center"
+            className="bg-white rounded-xl border border-surface-200 p-6"
           >
-            <p className="text-sm text-gray-500 mb-1">{card.label}</p>
-            <p className="text-3xl font-bold text-gray-900">{card.value}</p>
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-400 mb-1">
+              {card.label}
+            </p>
+            <p className={`text-3xl font-bold tabular-nums ${card.color}`}>
+              {card.value}
+            </p>
           </div>
         ))}
       </div>

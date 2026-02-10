@@ -60,26 +60,34 @@ export default function PaintingDetailPage() {
 
   if (loading) {
     return (
-      <div className="text-center py-16 text-gray-500">Loading...</div>
+      <div className="max-w-6xl mx-auto px-6 py-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+          <div className="aspect-square bg-surface-200 rounded-2xl animate-pulse" />
+          <div className="space-y-4">
+            <div className="h-8 bg-surface-200 rounded w-2/3 animate-pulse" />
+            <div className="h-5 bg-surface-200 rounded w-1/3 animate-pulse" />
+            <div className="h-10 bg-surface-200 rounded w-1/4 animate-pulse" />
+          </div>
+        </div>
+      </div>
     );
   }
 
   if (!painting) {
     return (
-      <div className="text-center py-16 text-gray-500">
+      <div className="text-center py-24 text-gray-400">
         Painting not found.
       </div>
     );
   }
 
-  const inCart = items.some(
-    (i) => i.painting.id === painting.id
-  );
+  const inCart = items.some((i) => i.painting.id === painting.id);
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
+    <div className="max-w-6xl mx-auto px-6 py-10">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+        {/* Image */}
+        <div className="bg-white rounded-2xl shadow-sm overflow-hidden border border-surface-200">
           <img
             src={imageUrl(painting.image_path)}
             alt={painting.title}
@@ -87,41 +95,54 @@ export default function PaintingDetailPage() {
           />
         </div>
 
-        <div>
-          <h1 className="text-3xl font-bold mb-2">{painting.title}</h1>
-          {painting.artist && (
-            <p className="text-lg text-gray-600 mb-4">by {painting.artist}</p>
+        {/* Details */}
+        <div className="py-2">
+          {painting.medium && (
+            <span className="inline-block text-[10px] font-bold uppercase tracking-[0.15em] text-brand-600 bg-brand-50 px-3 py-1 rounded-full mb-4">
+              {painting.medium}
+            </span>
           )}
-          <p className="text-3xl font-bold text-gray-900 mb-4">
-            ${(painting.price_cents / 100).toFixed(2)}
+          <h1 className="font-display text-3xl md:text-4xl font-bold text-surface-900 leading-tight">
+            {painting.title}
+          </h1>
+          {painting.artist && (
+            <p className="text-lg text-gray-500 mt-2">by {painting.artist}</p>
+          )}
+
+          <p className="text-4xl font-bold text-surface-900 mt-6 tabular-nums">
+            ${(painting.price_cents / 100).toLocaleString("en-US", { minimumFractionDigits: 2 })}
           </p>
 
-          {painting.medium && (
-            <div className="mb-4">
-              <span className="text-sm bg-gray-100 text-gray-600 px-3 py-1 rounded">
-                {painting.medium}
-              </span>
-            </div>
-          )}
-
           {painting.description && (
-            <p className="text-gray-700 mb-6">{painting.description}</p>
+            <p className="text-gray-600 mt-6 leading-relaxed">
+              {painting.description}
+            </p>
           )}
 
-          <div className="flex items-center gap-2 text-sm text-gray-500 mb-6">
-            <span>
-              Status:{" "}
+          <div className="mt-6 flex items-center gap-3">
+            <span
+              className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full ${
+                painting.status === "active"
+                  ? "bg-green-50 text-green-700"
+                  : painting.status === "sold"
+                  ? "bg-red-50 text-red-700"
+                  : "bg-gray-100 text-gray-600"
+              }`}
+            >
               <span
-                className={`font-medium ${
+                className={`w-1.5 h-1.5 rounded-full ${
                   painting.status === "active"
-                    ? "text-green-600"
+                    ? "bg-green-500"
                     : painting.status === "sold"
-                    ? "text-red-600"
-                    : "text-gray-600"
+                    ? "bg-red-500"
+                    : "bg-gray-400"
                 }`}
-              >
-                {painting.status}
-              </span>
+              />
+              {painting.status === "active"
+                ? "Available"
+                : painting.status === "sold"
+                ? "Sold"
+                : "Hidden"}
             </span>
           </div>
 
@@ -129,7 +150,7 @@ export default function PaintingDetailPage() {
             <button
               onClick={handleAddToCart}
               disabled={addingToCart || inCart}
-              className="w-full bg-gray-900 text-white py-3 rounded-lg font-semibold hover:bg-gray-800 disabled:opacity-50 transition-colors mb-4"
+              className="mt-8 w-full bg-surface-900 text-white py-3.5 rounded-xl font-semibold hover:bg-surface-800 disabled:opacity-50 transition-all active:scale-[0.98]"
             >
               {inCart
                 ? "Already in Cart"
@@ -138,39 +159,56 @@ export default function PaintingDetailPage() {
                 : "Add to Cart"}
             </button>
           )}
+
+          <p className="text-xs text-gray-400 mt-4">
+            Listed on {new Date(painting.created_at).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
+          </p>
         </div>
       </div>
 
       {/* Comments */}
-      <div className="mt-12">
-        <h2 className="text-2xl font-bold mb-6">
-          Comments ({comments.length})
+      <div className="mt-16 max-w-2xl">
+        <h2 className="font-display text-2xl font-bold text-surface-900 mb-6">
+          Comments
+          <span className="text-gray-400 font-sans text-lg font-normal ml-2">
+            ({comments.length})
+          </span>
         </h2>
 
-        {comments.map((c) => (
-          <div
-            key={c.id}
-            className="bg-white rounded-lg shadow-sm p-4 mb-3"
-          >
-            <p className="text-gray-800">{c.content}</p>
-            <p className="text-xs text-gray-400 mt-2">
-              {new Date(c.created_at).toLocaleDateString()}
-            </p>
-          </div>
-        ))}
+        {comments.length === 0 && (
+          <p className="text-gray-400 text-sm mb-6">
+            No comments yet. Be the first to share your thoughts.
+          </p>
+        )}
+
+        <div className="space-y-3">
+          {comments.map((c) => (
+            <div
+              key={c.id}
+              className="bg-white rounded-xl border border-surface-200 p-4"
+            >
+              <p className="text-surface-800 text-sm leading-relaxed">
+                {c.content}
+              </p>
+              <p className="text-[11px] text-gray-400 mt-2">
+                {new Date(c.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+              </p>
+            </div>
+          ))}
+        </div>
 
         {user && (
-          <form onSubmit={handleComment} className="mt-4">
+          <form onSubmit={handleComment} className="mt-6">
             <textarea
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
               placeholder="Write a comment..."
               rows={3}
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-gray-900"
+              className="w-full bg-white border border-surface-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-400 placeholder:text-gray-400 transition-all"
             />
             <button
               type="submit"
-              className="mt-2 bg-gray-900 text-white px-6 py-2 rounded-lg font-medium hover:bg-gray-800 transition-colors"
+              className="mt-2 bg-surface-900 text-white px-6 py-2.5 rounded-lg text-sm font-semibold hover:bg-surface-800 transition-colors"
             >
               Post Comment
             </button>

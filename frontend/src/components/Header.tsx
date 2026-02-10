@@ -9,16 +9,21 @@ export default function Header() {
   const { items } = useCart();
 
   return (
-    <header className="bg-gray-900 text-white shadow-lg">
-      <nav className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-        <Link href="/" className="text-xl font-bold tracking-tight">
-          Gallery
+    <header className="sticky top-0 z-50 bg-surface-950/95 backdrop-blur-md border-b border-white/5">
+      <nav className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+        <Link href="/" className="flex items-center gap-2 group">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center text-white text-sm font-bold tracking-tight group-hover:scale-110 transition-transform">
+            G
+          </div>
+          <span className="font-display text-lg text-white font-semibold tracking-wide">
+            Gallery
+          </span>
         </Link>
 
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-1">
           <Link
             href="/paintings"
-            className="hover:text-gray-300 transition-colors"
+            className="px-3 py-1.5 text-sm text-gray-300 hover:text-white hover:bg-white/5 rounded-lg transition-all"
           >
             Browse
           </Link>
@@ -27,39 +32,42 @@ export default function Header() {
             <>
               <Link
                 href="/sell"
-                className="hover:text-gray-300 transition-colors"
+                className="px-3 py-1.5 text-sm text-gray-300 hover:text-white hover:bg-white/5 rounded-lg transition-all"
               >
                 Sell
               </Link>
               <Link
                 href="/cart"
-                className="hover:text-gray-300 transition-colors relative"
+                className="px-3 py-1.5 text-sm text-gray-300 hover:text-white hover:bg-white/5 rounded-lg transition-all relative"
               >
                 Cart
                 {items.length > 0 && (
-                  <span className="absolute -top-2 -right-4 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  <span className="absolute -top-0.5 -right-0.5 bg-brand-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center ring-2 ring-surface-950">
                     {items.length}
                   </span>
                 )}
               </Link>
               <Link
                 href="/orders"
-                className="hover:text-gray-300 transition-colors"
+                className="px-3 py-1.5 text-sm text-gray-300 hover:text-white hover:bg-white/5 rounded-lg transition-all"
               >
                 Orders
               </Link>
               {user.role === "admin" && (
                 <Link
                   href="/admin"
-                  className="hover:text-gray-300 transition-colors text-amber-400"
+                  className="px-3 py-1.5 text-sm text-brand-400 hover:text-brand-300 hover:bg-brand-500/10 rounded-lg transition-all font-medium"
                 >
                   Admin
                 </Link>
               )}
-              <span className="text-gray-400 text-sm">{user.username}</span>
+              <div className="w-px h-5 bg-white/10 mx-2" />
+              <span className="text-xs text-gray-500 font-medium">
+                {user.username}
+              </span>
               <button
                 onClick={logout}
-                className="text-sm bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded transition-colors"
+                className="ml-1 px-3 py-1.5 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all"
               >
                 Logout
               </button>
@@ -68,13 +76,13 @@ export default function Header() {
             <>
               <Link
                 href="/login"
-                className="hover:text-gray-300 transition-colors"
+                className="px-3 py-1.5 text-sm text-gray-300 hover:text-white hover:bg-white/5 rounded-lg transition-all"
               >
-                Login
+                Sign In
               </Link>
               <Link
                 href="/register"
-                className="bg-white text-gray-900 px-4 py-1.5 rounded font-medium hover:bg-gray-100 transition-colors"
+                className="ml-1 px-4 py-1.5 text-sm bg-brand-500 text-white rounded-lg font-medium hover:bg-brand-600 transition-colors"
               >
                 Register
               </Link>
