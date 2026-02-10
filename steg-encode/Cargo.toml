@@ -1,0 +1,13 @@
+[package]
+name = "steg-encode"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "steg-encode"
+path = "src/main.rs"
+
+[dependencies]
+steg-core = { workspace = true }
+clap = { workspace = true }
+image = { workspace = true }

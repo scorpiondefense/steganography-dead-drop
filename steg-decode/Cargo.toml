@@ -1,0 +1,13 @@
+[package]
+name = "steg-decode"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "steg-decode"
+path = "src/main.rs"
+
+[dependencies]
+steg-core = { workspace = true }
+clap = { workspace = true }
+image = { workspace = true }
